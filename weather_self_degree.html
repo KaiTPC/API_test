@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather api</title>
+    <title>Weather api degree show </title>
     <!-- 先置入這兩段  -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"
     integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw=="
@@ -27,10 +27,12 @@
                 <tr>
                     <th>id</th>
                     <th>Name</th>
+                    <th>最低 - 最高 溫度 0-12hr</th>
+                    <th>最低 - 最高 溫度 12-24hr</th>
+                    <th>最低 - 最高 溫度 24-36hr</th>
                 </tr>
             </thead>
             <tbody id="myTbody">
-
                 <!-- 捨棄不用 因要ajax來顯示表格-->
                 <!-- <tr>
                     <td>Row 1 Data 1</td>
@@ -42,8 +44,7 @@
         <div class="container" id="myCtainer">
 
         </div>
-        <!-- data table show -->
-
+      
     <!-- 疑問:以下的script從哪裡來的? -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script> -->
    
@@ -52,7 +53,8 @@
 
     <!-- JS value/key -->
     <!-- <script src="/.gitgnore"></script> -->
-    <!-- src -->
+
+
     <script>
         const myContainer =$('#myContainer');
         const myTable =$('#myTable');
@@ -74,30 +76,44 @@
             // data: "data",
             dataType: "json",
             success: function (res) {
-                // console.log('res', res);
+                console.log('res', res);
                 let data = res['records']['location'];
-                // console.log('data', data);
+                console.log('data', data);
 
                 let content = '';
+                // key=1~22各縣市編碼 value=縣市名稱
+                // time array 只有 length 3 三個時段 
+
                 
+
                 data.forEach((value, key) => {
-                    // console.log(key);
-                    // console.log(value.locationName);
-                    //  console.log(key.value);
-                    content = content +`
-                        <tr>
-                            <td>${key+1}</td>
-                            <td>${value.locationName}</td>
-                            
-                        </tr>`;
-                        console.log(content)
+                        console.log(key);
+                        console.log(value.locationName);
+                        let time12 = ` ${value.weatherElement[0].time[0].parameter.parameterName} => ${value.weatherElement[2].time[0].parameter.parameterName} - ${value.weatherElement[4].time[0].parameter.parameterName}`;
+                        let time24 = ` ${value.weatherElement[0].time[1].parameter.parameterName} => ${value.weatherElement[2].time[1].parameter.parameterName} - ${value.weatherElement[4].time[0].parameter.parameterName}`;;
+                        let time36 = ` ${value.weatherElement[0].time[2].parameter.parameterName} => ${value.weatherElement[2].time[2].parameter.parameterName} - ${value.weatherElement[4].time[0].parameter.parameterName}`;;
+
+                        content = content + `
+                            <tr>
+                                <td>${key + 1}</td>
+                                <td>${value.locationName}</td>
+                                <td>${time12} &deg;C</td>
+                                <td>${time24} &deg;C</td>
+                                <td>${time36} &deg;C</td>
+                            </tr>
+                        `;
+                        // 先把content隱藏起來
+                        // console.log(content)
                 });
                 // 傳p tag
                 //  console.log(content)
                 // console.log(myTbody)
-                  myTbody.html(content);
-                //  $("#myTbody").html(content);
+                //   myTbody.html(content);
+                 $("#myTbody").html(content);
                 $("#myTable").dataTable();
+
+                myTbody.append(content);
+              
             }
 
         });
